@@ -99,11 +99,7 @@ class ViewController: UIViewController
             self.updateoffScreenLabel()
             
         })
-        
-    
-        
-        
-        
+
         
     }
 
