@@ -10,13 +10,13 @@ import UIKit
 
 class ViewController: UIViewController
 {
+    @IBOutlet var currentQuestionLabel: UILabel!
+    @IBOutlet var currentQuestionLabelCenterXConstraint: NSLayoutConstraint!
+    
+    @IBOutlet var nextQuestionLabel: UILabel!
+    @IBOutlet var nextQuestionLabelCenterXConstraint: NSLayoutConstraint!
     
     @IBOutlet var answerLabel: UILabel!
-    @IBOutlet var currentQuestionLabel : UILabel!
-    @IBOutlet var nextQuestionLabel : UILabel!
-    
-    @IBOutlet var currentQuestionLabelCenterXConstraint: NSLayoutConstraint!
-    @IBOutlet var nextQuestionLabelCenterXConstraint: NSLayoutConstraint!
     
     let questions: [String] = [
         "What is 7+7?",
@@ -57,7 +57,15 @@ class ViewController: UIViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         currentQuestionLabel.text = questions[currentQuestionIndex]
+        
+        updateoffScreenLabel()
     }
+    
+    func updateoffScreenLabel(){
+        let screenWidth = view.frame.width
+        nextQuestionLabelCenterXConstraint.constant = -screenWidth
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -66,13 +74,25 @@ class ViewController: UIViewController
     
     func animateLabelTransitions(){
         
-        UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
+        view.layoutIfNeeded()
+        
+        let screenWidth = view.frame.width
+        self.nextQuestionLabelCenterXConstraint.constant = 0
+        self.currentQuestionLabelCenterXConstraint.constant += screenWidth
+
+        UIView.animate(withDuration: 0.5, delay: 0, options: [.curveLinear], animations: {
             self.currentQuestionLabel.alpha = 0
             self.nextQuestionLabel.alpha = 1
-        }, completion: {
-            _ in swap(&self.currentQuestionLabel,
+            self.view.layoutIfNeeded()
+        }, completion: { _ in
+                swap(&self.currentQuestionLabel,
                       &self.nextQuestionLabel)
+                swap(&self.currentQuestionLabelCenterXConstraint,
+                 &self.nextQuestionLabelCenterXConstraint)
+                self.updateoffScreenLabel()
+            
         })
+        
     }
 
 
